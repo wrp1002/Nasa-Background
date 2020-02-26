@@ -6,8 +6,9 @@ NASA Background installer and uninstaller
 import psutil
 import shutil
 import os
+import signal
 import time
-
+import sys
 
 processName = "NASA Background.exe"
 bootDrive = os.getenv("SystemDrive")
@@ -37,12 +38,13 @@ def Install():
 		os.startfile(os.path.join(startupFolder, processName))
 		
 		print("Done!")
+
 	except FileNotFoundError:
 		print("Couldn't find '" + processName + "' in startup folder. Maybe try again?")
 		input("Press enter to exit...")
 		quit()
 	except:
-		print("Error installing. Maybe try again?")
+		print("Unexpected error:", sys.exc_info()[0])
 		input("Press enter to exit...")
 		quit()
 	
@@ -51,10 +53,16 @@ def Uninstall():
 	try:
 		didAnything = False
 		for proc in psutil.process_iter():
-			if proc.name() == processName:
-				print("'" + proc.name() + "' killed")
-				proc.kill()
-				didAnything = True
+			try:
+				if proc.name() == processName:
+					time.sleep(1)
+					proc.kill()
+					print("'" + proc.name() + "' killed")
+					didAnything = True
+			except psutil.AccessDenied:
+				pass
+			except:
+				print("Unexpeced error:", sys.exec_info()[0]);
 		
 		time.sleep(2)
 		
@@ -67,10 +75,12 @@ def Uninstall():
 			print("Done!")
 		else:
 			print("Nothing to uninstall")
+
 	except:
-		print("Error uninstalling. Maybe try again?")
+		print("Unexpected error:", sys.exc_info()[0])
 		input("Press enter to exit...")
 		quit()
+
 
 
 if __name__ == "__main__":
@@ -92,6 +102,5 @@ if __name__ == "__main__":
 		print("Uninstalling...")
 		Uninstall()
 		
-	input("Press enter to exit...")
-	quit()
+	time.sleep(3)
 	

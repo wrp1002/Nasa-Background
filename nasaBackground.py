@@ -45,7 +45,7 @@ def UpdateBackground(pageUrl):
 			with open(tempDir + "background.jpg", 'wb') as f:
 				f.write(response.content)
 				
-		#ctypes.windll.user32.SystemParametersInfoW(20, 0, tempDir + "background.jpg", 3)
+		ctypes.windll.user32.SystemParametersInfoW(20, 0, tempDir + "background.jpg", 3)
 		
 	except AttributeError:
 		print("No new image found today")
@@ -59,7 +59,7 @@ def UpdateBackground(pageUrl):
 if __name__=="__main__":
 	UpdateBackground(fullUrl)	# Check for new images on startup
 
-	while False:	
+	while True:	
 		print("Waiting an hour...")
 		while datetime.now().hour != 4:
 			time.sleep(3600)
